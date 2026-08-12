@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="OrderFlow.Contracts/OrderFlow.Contracts.csproj" Id="5caf7643-052b-46d3-80b6-e1de9b83624c" />
+  <Project Path="OrderFlow.Inventory.Worker/OrderFlow.Inventory.Worker.csproj" Id="241d3d96-1547-4749-9a46-4ac5411f720e" />
   <Project Path="OrderFlow.Orders.Api/OrderFlow.Orders.Api.csproj" Id="2b4e91ec-5eb7-49b6-9bd2-b7bb62272cff" />
 </Solution>
