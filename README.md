@@ -702,6 +702,8 @@ Estado del proyecto
 | Variables de entorno | ✅ |
 | Tests backend | ✅ 5/5 |
 | README | ✅ |
+
+
 Tecnologías utilizadas
 C#
 .NET 10
