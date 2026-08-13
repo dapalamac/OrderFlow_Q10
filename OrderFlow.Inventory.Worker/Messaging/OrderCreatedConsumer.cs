@@ -102,15 +102,17 @@ public sealed class OrderCreatedConsumer
                 {
                     case InventoryResult.Reserved:
 
+                        var stockReserved = new StockReserved
+                        {
+                            EventId = Guid.NewGuid(),
+                            OrderId = orderCreated.OrderId,
+                            Sku = orderCreated.Sku,
+                            Quantity = orderCreated.Quantity,
+                            OccurredAt = DateTime.UtcNow
+                        };
+
                         await _publisher.PublishAsync(
-                            new
-                            {
-                                EventId = Guid.NewGuid(),
-                                OrderId = orderCreated.OrderId,
-                                Sku = orderCreated.Sku,
-                                Quantity = orderCreated.Quantity,
-                                OccurredAt = DateTime.UtcNow
-                            },
+                            stockReserved,
                             "stock.exchange",
                             "stock.reserved");
 
@@ -121,34 +123,40 @@ public sealed class OrderCreatedConsumer
 
                     case InventoryResult.InsufficientStock:
 
+                        var stockRejected = new StockRejected
+                        {
+                            EventId = Guid.NewGuid(),
+                            OrderId = orderCreated.OrderId,
+                            Sku = orderCreated.Sku,
+                            Quantity = orderCreated.Quantity,
+                            OccurredAt = DateTime.UtcNow,
+                            Reason = "Insufficient stock"
+                        };
+
                         await _publisher.PublishAsync(
-                            new
-                            {
-                                EventId = Guid.NewGuid(),
-                                OrderId = orderCreated.OrderId,
-                                Sku = orderCreated.Sku,
-                                Quantity = orderCreated.Quantity,
-                                OccurredAt = DateTime.UtcNow
-                            },
+                            stockRejected,
                             "stock.exchange",
                             "stock.rejected");
 
                         Console.WriteLine(
-                            $"Stock rechazado: {orderCreated.Sku}");
+                            $"Stock rechazado por falta de stock: {orderCreated.Sku}");
 
                         break;
 
                     case InventoryResult.ProductNotFound:
 
+                        var productNotFound = new StockRejected
+                        {
+                            EventId = Guid.NewGuid(),
+                            OrderId = orderCreated.OrderId,
+                            Sku = orderCreated.Sku,
+                            Quantity = orderCreated.Quantity,
+                            OccurredAt = DateTime.UtcNow,
+                            Reason = "Product not found"
+                        };
+
                         await _publisher.PublishAsync(
-                            new
-                            {
-                                EventId = Guid.NewGuid(),
-                                OrderId = orderCreated.OrderId,
-                                Sku = orderCreated.Sku,
-                                Quantity = orderCreated.Quantity,
-                                OccurredAt = DateTime.UtcNow
-                            },
+                            productNotFound,
                             "stock.exchange",
                             "stock.rejected");
 
@@ -157,12 +165,6 @@ public sealed class OrderCreatedConsumer
 
                         break;
 
-                    case InventoryResult.AlreadyProcessed:
-
-                        Console.WriteLine(
-                            $"Evento duplicado ignorado: {orderCreated.EventId}");
-
-                        break;
                 }
 
                 await channel.BasicAckAsync(

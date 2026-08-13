@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrderFlow.Orders.Api.Data;
 using OrderFlow.Orders.Api.Messaging;
+using OrderFlow.Orders.Api.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,12 @@ builder.Services.AddDbContext<OrderFlowDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("OrderFlowDatabase")));
 
 builder.Services.AddSingleton<IMessagePublisher, RabbitMqPublisher>();
+
+builder.Services.AddSingleton<StockResultConsumer>();
+
+builder.Services.AddHostedService<StockResultWorker>();
+
+
 
 var app = builder.Build();
 
