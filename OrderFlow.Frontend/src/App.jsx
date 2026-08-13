@@ -13,7 +13,7 @@ function App() {
     return (
        <main>
           <div className="header">
-              <h1>OrderFlow</h1>
+              <h1>Store Management</h1>
               <p>Gestión de pedidos e inventario</p>
           </div>
 
