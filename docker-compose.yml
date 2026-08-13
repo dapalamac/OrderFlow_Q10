@@ -5,7 +5,7 @@ services:
     container_name: orderflow-sqlserver
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "OrderFlow_StrongPassword_123!"
+      MSSQL_SA_PASSWORD: "${SQLSERVER_PASSWORD}"
     ports:
       - "1433:1433"
     volumes:
@@ -17,6 +17,54 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+
+  orders-api:
+    build:
+      context: .
+      dockerfile: OrderFlow.Orders.Api/Dockerfile
+    container_name: orderflow-orders-api
+    ports:
+      - "5216:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+
+      ConnectionStrings__OrderFlowDatabase: "Server=sqlserver;Database=OrderFlowOrders;User Id=sa;Password=${SQLSERVER_PASSWORD};TrustServerCertificate=True;"
+
+      RabbitMQ__Host: "rabbitmq"
+      RabbitMQ__Port: "5672"
+      RabbitMQ__UserName: "guest"
+      RabbitMQ__Password: "guest"
+
+    depends_on:
+      - sqlserver
+      - rabbitmq
+
+  inventory-worker:
+    build:
+      context: .
+      dockerfile: OrderFlow.Inventory.Worker/Dockerfile
+    container_name: orderflow-inventory-worker
+    environment:
+      ConnectionStrings__InventoryDatabase: "Server=sqlserver;Database=OrderFlowInventory;User Id=sa;Password=${SQLSERVER_PASSWORD};TrustServerCertificate=True;"
+
+      RabbitMQ__Host: "rabbitmq"
+      RabbitMQ__Port: "5672"
+      RabbitMQ__UserName: "guest"
+      RabbitMQ__Password: "guest"
+
+    depends_on:
+      - sqlserver
+      - rabbitmq
+
+  frontend:
+    build:
+      context: ./OrderFlow.Frontend
+      dockerfile: Dockerfile
+    container_name: orderflow-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - orders-api
 
 volumes:
   sqlserver_data:

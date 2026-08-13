@@ -74,10 +74,20 @@ public class OrdersController : ControllerBase
             order.Quantity,
             DateTime.UtcNow);
 
-        await _publisher.PublishAsync(
-            orderCreated,
-            "orders.exchange",
-            "orders.created");
+        try
+        {
+            await _publisher.PublishAsync(
+                orderCreated,
+                "orders.exchange",
+                "orders.created");
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+            {
+                message = "El pedido fue creado y quedó en estado Pending, pero no fue posible enviarlo al sistema de inventario."
+            });
+        }
 
         return CreatedAtAction(
             nameof(GetOrderById),
@@ -96,6 +106,7 @@ public class OrdersController : ControllerBase
 
         return Ok(orders);
     }
+
 
     // GET /orders/{id}
     [HttpGet("{id:guid}")]
