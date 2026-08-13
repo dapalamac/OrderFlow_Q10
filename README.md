@@ -519,7 +519,6 @@ Inventory Worker
     → inventario
 ```
 ---
-Trade-offs
 Persistencia antes de publicación
 Actualmente el pedido se guarda antes de publicar `OrderCreated`.
 Ventaja:
@@ -527,8 +526,6 @@ El pedido no se pierde si RabbitMQ está temporalmente caído.
 Desventaja:
 Si RabbitMQ falla después de guardar el pedido, el evento puede no
 publicarse y el pedido puede quedar en `Pending`.
-Alternativa
-Implementar Outbox Pattern.
 ---
 Polling en frontend
 El frontend actualiza periódicamente la lista de pedidos.
@@ -541,12 +538,7 @@ visualización.
 Genera solicitudes periódicas.
 Para esta prueba técnica se considera suficiente.
 Una alternativa sería utilizar:
-``` text
 
-SignalR / WebSockets
-```
-para actualizaciones en tiempo real.
----
 Estructura del proyecto
 ``` text
 
