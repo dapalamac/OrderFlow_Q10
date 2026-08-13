@@ -1,24 +1,19 @@
-namespace OrderFlow.Inventory.Worker
+using OrderFlow.Inventory.Worker.Messaging;
+
+namespace OrderFlow.Inventory.Worker;
+
+public sealed class Worker : BackgroundService
 {
-    public class Worker : BackgroundService
+    private readonly OrderCreatedConsumer _consumer;
+
+    public Worker(OrderCreatedConsumer consumer)
     {
-        private readonly ILogger<Worker> _logger;
+        _consumer = consumer;
+    }
 
-        public Worker(ILogger<Worker> logger)
-        {
-            _logger = logger;
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                }
-                await Task.Delay(1000, stoppingToken);
-            }
-        }
+    protected override async Task ExecuteAsync(
+        CancellationToken stoppingToken)
+    {
+        await _consumer.StartAsync(stoppingToken);
     }
 }
