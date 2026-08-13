@@ -536,8 +536,6 @@ Desventaja:
 Existe un pequeño retraso entre el cambio de estado y su
 visualización.
 Genera solicitudes periódicas.
-Para esta prueba técnica se considera suficiente.
-Una alternativa sería utilizar:
 
 Estructura del proyecto
 ``` text
